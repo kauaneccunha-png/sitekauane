@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guia Visual de Redes para Automação</title>
+    <title>Guia Visual de Redes para Automação v2</title>
     <style>
         :root {
             --primary-blue: #1A365D;
@@ -15,8 +15,18 @@
             --text-muted: #718096;
             --green-success: #38A169;
             --red-danger: #E53E3E;
-            --radius: 10px;
+            --radius: 12px;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Variáveis para o Modo Escuro */
+        [data-theme="dark"] {
+            --bg-factory: #1A202C;
+            --card-white: #2D3748;
+            --text-dark: #EDF2F7;
+            --text-muted: #A0AEC0;
+            --primary-blue: #2B6CB0;
+            --primary-hover: #4299E1;
         }
 
         * {
@@ -24,6 +34,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         body {
@@ -33,30 +44,70 @@
             padding: 30px 20px;
         }
 
+        /* Top Bar com seletor de tema */
+        .top-bar {
+            max-width: 900px;
+            margin: 0 auto 10px auto;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid var(--text-muted);
+            color: var(--text-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
         header {
             text-align: center;
             max-width: 900px;
             margin: 0 auto 35px auto;
-            padding: 30px;
-            background: linear-gradient(135deg, var(--primary-blue), #2B6CB0);
+            padding: 35px;
+            background: linear-gradient(135deg, #1A365D, #2B6CB0);
             color: white;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
 
         header h1 {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             margin-bottom: 8px;
             letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2;
         }
 
         header p {
             font-weight: 300;
             opacity: 0.9;
             font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
         }
 
-        /* Estrutura das Abas */
+        /* Elemento decorativo de ondas de rede no header */
+        header::after {
+            content: "📶";
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 10rem;
+            opacity: 0.08;
+            transform: rotate(-15deg);
+        }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -74,34 +125,39 @@
             font-size: 1.05rem;
             font-weight: 600;
             background-color: #E2E8F0;
-            color: var(--primary-blue);
+            color: #1A365D;
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.3s, color 0.3s;
+            transition: all 0.3s;
+        }
+
+        body[data-theme="dark"] .tab-btn {
+            background-color: #4A5568;
+            color: #E2E8F0;
         }
 
         .tab-btn:hover {
             transform: translateY(-2px);
-            background-color: #CBD5E0;
+            opacity: 0.9;
         }
 
         .tab-btn.active {
             background-color: var(--accent-orange);
             color: white;
-            box-shadow: 0 4px 12px rgba(221, 107, 32, 0.3);
+            box-shadow: 0 4px 12px rgba(221, 107, 32, 0.4);
         }
 
         .tab-content {
             display: none;
-            animation: slideUp 0.4s ease forwards;
+            animation: fadeIn 0.4s ease forwards;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        /* Elementos da Aba 1: Cabos Industriais */
+        /* Grid de Cards */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -117,13 +173,18 @@
             cursor: pointer;
             text-align: center;
             border: 2px solid transparent;
-            transition: all 0.3s ease;
+            position: relative;
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .card.selected {
             border-color: var(--accent-orange);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background-color: rgba(221, 107, 32, 0.03);
+            box-shadow: 0 0 15px rgba(221, 107, 32, 0.15);
         }
 
         .card h3 {
@@ -132,12 +193,13 @@
             margin-bottom: 10px;
         }
 
-        .card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+        .card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: inline-block;
         }
 
-        /* Elementos da Aba 2: Topologias */
+        /* Botões de Ação */
         .buttons-group {
             display: flex;
             justify-content: center;
@@ -155,8 +217,8 @@
             border: none;
             border-radius: var(--radius);
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
             box-shadow: var(--shadow);
+            border: 2px solid transparent;
         }
 
         .action-btn:hover {
@@ -164,14 +226,20 @@
             transform: scale(1.02);
         }
 
-        /* Painel Dinâmico de Explicações */
+        .action-btn.selected {
+            border-color: var(--accent-orange);
+            background-color: var(--accent-orange);
+            box-shadow: 0 4px 12px rgba(221, 107, 32, 0.3);
+        }
+
+        /* Painel de Informações */
         .info-panel {
             background-color: var(--card-white);
             padding: 30px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             border-left: 6px solid var(--primary-blue);
-            min-height: 120px;
+            animation: fadeIn 0.3s ease;
         }
 
         .info-panel h2 {
@@ -180,196 +248,30 @@
             font-size: 1.5rem;
         }
 
-        /* Listas de Vantagens e Desvantagens */
+        /* Gráfico Animado de Sinal (Live Telemetry Simulation) */
+        .live-signal {
+            margin-top: 15px;
+            background: #1A202C;
+            padding: 12px;
+            border-radius: 8px;
+            color: #48BB78;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #48BB78;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Listas Prós/Contras */
         .pros-cons-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .list-wrapper {
-            padding: 20px;
-            border-radius: var(--radius);
-        }
-
-        .list-wrapper.advantages {
-            background-color: #F0FFF4;
-            border-top: 4px solid var(--green-success);
-        }
-
-        .list-wrapper.disadvantages {
-            background-color: #FFF5F5;
-            border-top: 4px solid var(--red-danger);
-        }
-
-        .list-wrapper h4 {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-        }
-
-        .list-wrapper.advantages h4 { color: var(--green-success); }
-        .list-wrapper.disadvantages h4 { color: var(--red-danger); }
-
-        .list-wrapper ul {
-            list-style-type: none;
-        }
-
-        .list-wrapper li {
-            margin-bottom: 10px;
-            position: relative;
-            padding-left: 20px;
-            font-size: 0.95rem;
-        }
-
-        .list-wrapper.advantages li::before {
-            content: "✔";
-            position: absolute;
-            left: 0;
-            color: var(--green-success);
-        }
-
-        .list-wrapper.disadvantages li::before {
-            content: "✖";
-            position: absolute;
-            left: 0;
-            color: var(--red-danger);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>Guia Visual de Redes para Automação</h1>
-        <p>Infraestrutura Física e Lógica Voltada ao Chão de Fábrica</p>
-    </header>
-
-    <div class="container">
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="changeTab('cabos')">Cabos Industriais</button>
-            <button class="tab-btn" onclick="changeTab('topologias')">Topologias</button>
-        </div>
-
-        <div id="cabos" class="tab-content active">
-            <div class="cards-grid">
-                <div class="card" onclick="renderCaboInfo('par')">
-                    <h3>Par Trançado</h3>
-                    <p>Clique para ver onde é utilizado na fábrica.</p>
-                </div>
-                <div class="card" onclick="renderCaboInfo('fibra')">
-                    <h3>Fibra Óptica</h3>
-                    <p>Clique para ver onde é utilizado na fábrica.</p>
-                </div>
-                <div class="card" onclick="renderCaboInfo('wireless')">
-                    <h3>Wireless</h3>
-                    <p>Clique para ver onde é utilizado na fábrica.</p>
-                </div>
-            </div>
-            
-            <div id="panel-cabos" class="info-panel">
-                <h2>Selecione um meio de transmissão acima</h2>
-                <p style="color: var(--text-muted);">Clique em um dos cards para conferir a aplicação prática e simplificada de cada cabo dentro do ambiente industrial.</p>
-            </div>
-        </div>
-
-        <div id="topologias" class="tab-content">
-            <div class="buttons-group">
-                <button class="action-btn" onclick="renderTopologiaInfo('estrela')">Layout em Estrela</button>
-                <button class="action-btn" onclick="renderTopologiaInfo('barramento')">Layout em Barramento</button>
-            </div>
-
-            <div id="panel-topologias" class="info-panel" style="display: none;">
-                </div>
-        </div>
-    </div>
-
-    <script>
-        // Função responsável por alternar as abas principais
-        function changeTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // Banco de dados simplificado para os Cabos Industriais
-        const cabosData = {
-            'par': {
-                title: 'Par Trançado (Cabos Ethernet Industriais / RS-485)',
-                desc: 'É o cabo mais comum na fábrica. Ele é usado para conectar o <strong>CLP (Controlador Lógico Programável)</strong> aos computadores da sala de controle, às telas de operação (IHMs) e a inversores de frequência em distâncias curtas e médias. Suas tranças internas ajudam a anular os ruídos elétricos gerados por motores próximos.'
-            },
-            'fibra': {
-                title: 'Fibra Óptica',
-                desc: 'Utilizada para conectar a sala de controle principal a setores distantes da fábrica ou para passar ao lado de painéis de alta tensão e grandes motores. Como transmite dados por meio de pulsos de luz, ela é <strong>100% imune a interferências eletromagnéticas</strong> e evita falhas de comunicação em ambientes severos.'
-            },
-            'wireless': {
-                title: 'Wireless (Redes Sem Fio Industriais)',
-                desc: 'Usado para coletar dados de sensores instalados em locais móveis ou de difícil acesso, como em <strong>pontes rolantes, braços de robôs ou esteiras giratórias</strong> onde cabos físicos se romperiam facilmente com o movimento contínuo.'
-            }
-        };
-
-        function renderCaboInfo(tipo) {
-            const painel = document.getElementById('panel-cabos');
-            painel.innerHTML = `<h2>${cabosData[tipo].title}</h2><p>${cabosData[tipo].desc}</p>`;
-        }
-
-        // Banco de dados e estrutura para as Topologias (Vantagens e Desvantagens no Chão de Fábrica)
-        function renderTopologiaInfo(layout) {
-            const painel = document.getElementById('panel-topologias');
-            painel.style.display = 'block';
-
-            if (layout === 'estrela') {
-                painel.innerHTML = `
-                    <h2>Layout em Estrela</h2>
-                    <p><strong>Onde é usado:</strong> É o padrão mais moderno do chão de fábrica para redes Ethernet (Profinet, EtherNet/IP). Todos os equipamentos (CLPs, robôs, sensores inteligentes) possuem um cabo individual que vai até um equipamento central de distribuição chamado <em>Switch</em>.</p>
-                    
-                    <div class="pros-cons-container">
-                        <div class="list-wrapper advantages">
-                            <h4>Vantagens para o Chão de Fábrica</h4>
-                            <ul>
-                                <li><strong>Isolamento de falhas:</strong> Se um cabo quebrar ou um sensor queimar, apenas aquele equipamento para. O resto da fábrica continua operando normalmente.</li>
-                                <li><strong>Manutenção ágil:</strong> É muito fácil e rápido identificar qual cabo está com defeito olhando as luzes indicadoras do switch.</li>
-                                <li><strong>Expansão simples:</strong> Para adicionar um equipamento novo, basta passar um cabo dele direto até o switch, sem mexer nas máquinas antigas.</li>
-                            </ul>
-                        </div>
-                        <div class="list-wrapper disadvantages">
-                            <h4>Desvantagens para o Chão de Fábrica</h4>
-                            <ul>
-                                <li><strong>Gasto de cabeamento:</strong> Exige uma quantidade muito maior de metros de cabo, já que cada máquina precisa do seu próprio fio exclusivo.</li>
-                                <li><strong>Dependência central:</strong> Se o switch central falhar por falta de energia ou queimar, toda a comunicação daquele setor da fábrica cai imediatamente.</li>
-                            </ul>
-                        </div>
-                    </div>`;
-            } else if (layout === 'barramento') {
-                painel.innerHTML = `
-                    <h2>Layout em Barramento</h2>
-                    <p><strong>Onde é usado:</strong> Muito comum em redes de campo tradicionais (como Profibus DP e AS-Interface). Um único cabo principal sai do CLP e vai passando e "amarrando" máquina por máquina em uma única linha contínua.</p>
-                    
-                    <div class="pros-cons-container">
-                        <div class="list-wrapper advantages">
-                            <h4>Vantagens para o Chão de Fábrica</h4>
-                            <ul>
-                                <li><strong>Grande economia:</strong> Utiliza pouquíssimo cabo, economizando dinheiro na compra de materiais e calhas metálicas.</li>
-                                <li><strong>Instalação inicial rápida:</strong> O trajeto do cabo acompanha a linha de produção de forma direta e sem rodeios, facilitando a montagem inicial da rede.</li>
-                            </ul>
-                        </div>
-                        <div class="list-wrapper disadvantages">
-                            <h4>Desvantagens para o Chão de Fábrica</h4>
-                            <ul>
-                                <li><strong>Efeito dominó:</strong> Se o cabo principal sofrer um corte ou um mau contato no início da linha, todos os equipamentos que estão depois desse ponto ficam completamente isolados e caem.</li>
-                                <li><strong>Difícil diagnóstico:</strong> Descobrir o ponto exato onde o cabo quebrou ou rompeu no meio do chão de fábrica pode levar horas, atrasando o retorno da produção.</li>
-                                <li><strong>Limitação:</strong> Adicionar ou mudar uma máquina de lugar exige interromper ou emendar o cabo principal, o que pode desestabilizar a comunicação.</li>
-                            </ul>
-                        </div>
-                    </div>`;
-            }
-        }
-    </script>
-</body>
-</html>
+            grid-template-
